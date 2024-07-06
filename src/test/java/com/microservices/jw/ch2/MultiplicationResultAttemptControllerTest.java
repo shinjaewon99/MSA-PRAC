@@ -14,8 +14,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static com.microservices.jw.ch2.MultiplicationResultAttemptController.ResultResponse;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.given;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @WebMvcTest(MultiplicationController.class)
@@ -37,13 +37,18 @@ class MultiplicationResultAttemptControllerTest {
 
     @Test
     void postResultReturnCorrect() throws Exception {
+        genericParameterizedTest(true);
+    }
+
+    @Test
+    void postResultReturnNotCorrect() throws Exception {
         genericParameterizedTest(false);
     }
 
     void genericParameterizedTest(final boolean correct) throws Exception {
         // given
-        given(mockMvc.checkAttempt(any(MultiplicationResultAttempt.class)))
-                .willReturn(correct);
+        given(multiplicationService.checkAttempt(any(MultiplicationResultAttempt.class)))
+                .willReturn(true);
 
         User user = new User("jw");
         Multiplication multiplication = new Multiplication(50, 70);
