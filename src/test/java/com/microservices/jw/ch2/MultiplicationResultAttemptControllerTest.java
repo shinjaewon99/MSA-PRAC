@@ -12,6 +12,8 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Optional;
+
 import static com.microservices.jw.ch2.MultiplicationResultAttemptController.ResultResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -22,7 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 class MultiplicationResultAttemptControllerTest {
 
     @MockBean
-    private MultiplicationService multiplicationService;
+    private MultiplicationServiceImpl multiplicationService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -62,5 +64,37 @@ class MultiplicationResultAttemptControllerTest {
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo(jsonResponse.write(new ResultResponse(correct)).getJson());
+    }
+
+    @Test
+    void checkCorrectAttemptTest() {
+        // given
+        Multiplication multiplication = new Multiplication(50, 60);
+        User user = new User("jw_do");
+
+        MultiplicationResultAttempt attempt = new MultiplicationResultAttempt(user, multiplication, 3000);
+
+        // when
+        boolean attemptResult = multiplicationService.checkAttempt(attempt);
+
+        // assert
+        assertThat(attemptResult).isTrue();
+    }
+
+    @Test
+    void checkWrongAttemptTest() {
+        // given
+        Multiplication multiplication = new Multiplication(50, 60);
+        User user = new User("jw_do");
+
+        MultiplicationResultAttempt attempt = new MultiplicationResultAttempt(user, multiplication, 3010);
+
+        assertThat(userRepository.findByAlias("jw_do")).willReturn(Optional.empty());
+
+        // when
+        boolean attemptResult = multiplicationService.checkAttempt(attempt);
+
+        // assert
+        assertThat(attemptResult).isFalse();
     }
 }
