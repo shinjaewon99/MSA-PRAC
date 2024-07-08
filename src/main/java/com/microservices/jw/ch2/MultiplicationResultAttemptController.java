@@ -18,10 +18,14 @@ public final class MultiplicationResultAttemptController {
 
     // POST 구현체를 추가
     @PostMapping("/")
-    ResponseEntity<ResultResponse> postResult(@RequestBody MultiplicationResultAttempt multiplicationResultAttempt) {
-        return ResponseEntity.ok(
-                new ResultResponse(multiplicationService.checkAttempt(multiplicationResultAttempt))
-        );
+    ResponseEntity<MultiplicationResultAttempt> postResult(@RequestBody MultiplicationResultAttempt multiplicationResultAttempt) {
+        boolean isCorrect = multiplicationService.checkAttempt(multiplicationResultAttempt);
+
+        MultiplicationResultAttempt attemptCopy =
+                new MultiplicationResultAttempt(multiplicationResultAttempt.user(),
+                        multiplicationResultAttempt.multiplication(), multiplicationResultAttempt.resultAttempt());
+
+        return ResponseEntity.ok(attemptCopy);
     }
 
     @RequiredArgsConstructor
