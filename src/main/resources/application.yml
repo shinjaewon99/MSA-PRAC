@@ -11,3 +11,8 @@ spring:
   datasource:
     url: jdbc:h2:file:~/social-multiplication;
 
+## RabbitMQ 설정
+multiplication:
+  exchange: multiplication_exchange
+  solved:
+    key: multiplication.solved
